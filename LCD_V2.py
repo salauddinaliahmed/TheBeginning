@@ -23,7 +23,7 @@ def rcb_logo():
 
 # Drawing on screen
 def draw_onscreen(x, y, text):
-    a = ip_addr()
+    a = IP_Addr()
     if text == a:
         with canvas(device) as draw:
             draw.text((0,0), "IP:"+ IP, fill="white")
@@ -32,7 +32,7 @@ def draw_onscreen(x, y, text):
         with canvas(device) as draw:
             draw.text((0,0), "Internet offline", fill="white")
     else:
-        a = ip_addr()
+        a = IP_Addr()
         with canvas(device) as draw:
             #if "192.168.1" in a:
              #   a = "Incorrect Router"
@@ -202,3 +202,5 @@ if __name__ == '__main__':
         IP = ip_addr()
     draw_onscreen(0, 0, IP)
     launch_check()
+    # add this comment
+    
