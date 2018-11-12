@@ -9,10 +9,10 @@ class Window(tkinter.Frame):
     def init_window(self):
         self.master.title("Weather app")
         self.grid()
-        refresh_button = tkinter.Button(text = "Refresh Forcast", width =20, command = self.refresh_weather, height=5, font = ("Helvetica", 20))
+        refresh_button = tkinter.Button(text = "Refresh Forcast", width =5, command = self.refresh_weather, height=2, font = ("Helvetica", 10))
         refresh_button.grid()
 
-        exit_app = tkinter.Button(text="Exit", width=20, command = self.exit_window, height= 5, font = ("Helvetica", 20))
+        exit_app = tkinter.Button(text="Exit", width=5, command = self.exit_window, height= 2, font = ("Helvetica", 10))
         exit_app.place(x =100, y =350)
         
 
@@ -25,10 +25,10 @@ class Window(tkinter.Frame):
         desc = stuff['weather'][0]['description']
         forc = stuff['weather'][0]['main']
         wind_spd = stuff['wind']['speed']
-        temperature = tkinter.Label(root, text = "Temperature :" +str(temp)+ " Degree Celcius", font = ("Helvetica", 30), fg= 'red')
-        description = tkinter.Label(root, text = "Sky: " + str(desc), font = ("Helvetica", 30))
-        forcast = tkinter.Label(root, text = "Forcast: " + str(forc), font = ("Helvetica", 30))
-        wind = tkinter.Label(root, text = "Wind Speed: " + str(wind_spd) + " Km/hr", font = ("Helvetica", 30))
+        temperature = tkinter.Label(root, text = "Temperature :" +str(temp)+ " Degree Celcius", font = ("Helvetica", 12), fg= 'red')
+        description = tkinter.Label(root, text = "Sky: " + str(desc), font = ("Helvetica", 12))
+        forcast = tkinter.Label(root, text = "Forcast: " + str(forc), font = ("Helvetica", 12))
+        wind = tkinter.Label(root, text = "Wind Speed: " + str(wind_spd) + " Km/hr", font = ("Helvetica", 12))
         temperature.grid(column=0, row = 20)
         description.grid(column=0, row = 25)
         forcast.grid(column=0, row = 30)
