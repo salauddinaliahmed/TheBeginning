@@ -9,11 +9,11 @@ class Window(tkinter.Frame):
     def init_window(self):
         self.master.title("Weather app")
         self.grid()
-        refresh_button = tkinter.Button(text = "Refresh Forcast", width =5, command = self.refresh_weather, height=2, font = ("Helvetica", 10))
+        refresh_button = tkinter.Button(text = "Refresh Forcast", command = self.refresh_weather, height=2, font = ("Helvetica", 10))
         refresh_button.grid()
 
-        exit_app = tkinter.Button(text="Exit", width=5, command = self.exit_window, height= 2, font = ("Helvetica", 10))
-        exit_app.place(x =100, y =350)
+        exit_app = tkinter.Button(text="Exit", command = self.exit_window, height= 2, font = ("Helvetica", 10))
+        exit_app.place(x =100, y =150)
         
 
 
