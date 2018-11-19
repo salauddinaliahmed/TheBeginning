@@ -1,7 +1,7 @@
 from dronekit import connect, Command, LocationLocal, Vehicle, VehicleMode
 from pymavlink import mavutil
 import time, argparse, math, sys
-import dronekit_sitl
+#import dronekit_sitl
 
 
 #Using simulator 
@@ -29,7 +29,7 @@ def PX4setMode(mavMode):
 
 #Take off message. 
 def takeoff(alt):
-    drone._master.mav.command_long_send(0, 0, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, float(NaN), float(NaN), alt)
+    drone._master.mav.command_long_send(0, 0, mavutil.mavlink.MAV_CMD_NAV_TAKEOFF, 0, 0, 0, 0, 0, NAN, NAN, alt)
     print "Message sent"
     while True:
         print(" Altitude: ", abs(drone.location.local_frame.down))

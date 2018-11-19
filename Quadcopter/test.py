@@ -29,7 +29,7 @@ if not connection_string:
 
 # Connect to the Vehicle
 print('Connecting to vehicle on: %s' % connection_string)
-vehicle = connect(connection_string, wait_ready=True)
+vehicle = connect(connection_string, wait_ready=None)
 
 
 def arm_and_takeoff(aTargetAltitude):
@@ -39,14 +39,18 @@ def arm_and_takeoff(aTargetAltitude):
 
     print("Basic pre-arm checks")
     # Don't try to arm until autopilot is ready
-    while not vehicle.is_armable:
-        print(" Waiting for vehicle to initialise...")
-        time.sleep(1)
+   # while not vehicle.is_armable:
+    #    print(" Waiting for vehicle to initialise...")
+     #   time.sleep(1)
 
-    print("Arming motors")
+#    while True:
+#	print (vehicle.armed)
+#	print (vehicle.location)
+#	print (vehicle.attitude)	
+    print("setting vehile mode")
     # Copter should arm in GUIDED mode
-    vehicle.mode = VehicleMode("GUIDED")
-    vehicle.armed = True
+    vehicle.mode = VehicleMode("AUTO")
+    #vehicle.armed = True
 
     # Confirm vehicle armed before attempting to take off
     while not vehicle.armed:
@@ -54,14 +58,14 @@ def arm_and_takeoff(aTargetAltitude):
         time.sleep(1)
 
     print("Taking off!")
-    print (vehicle.location.local_frame)
+    print (vehicle.location)
     vehicle.simple_takeoff(aTargetAltitude)  # Take off to target altitude
 
     # Wait until the vehicle reaches a safe height before processing the goto
     #  (otherwise the command after Vehicle.simple_takeoff will execute
     #   immediately).
     while True:
-        print(" Altitude: ", abs(vehicle.location.local_frame.down))
+	print(" Altitude: ", abs(vehicle.location.local_frame.down))
         # Break and return from function just below target altitude.
         if abs(vehicle.location.local_frame.down) >= aTargetAltitude * 0.95:
             print("Reached target altitude")
@@ -114,7 +118,7 @@ def goto_position_target_local_ned(north, east, down):
 print ("Sailing north")
 east_now = vehicle.location.local_frame.east
 down_now = vehicle.location.local_frame.down
-goto_position_target_local_ned(0.5, east_now, down_now)
+goto_position_target_local_ned(0.1, east_now, down_now)
 print ("------------------ Moving ------------")
 print (vehicle.location.local_frame)
 print ("Current north north direction: ", vehicle.location.local_frame.north)
@@ -133,7 +137,7 @@ print ("In the north direction: ", vehicle.location.local_frame.north)
 
 east_now = vehicle.location.local_frame.east
 down_now = vehicle.location.local_frame.down
-goto_position_target_local_ned(-0.5, east_now, down_now)
+goto_position_target_local_ned(-0.1, east_now, down_now)
 print ("------------------ Moving Backward------------")
 print (vehicle.location.local_frame)
 print ("Current north north direction: ", vehicle.location.local_frame.north)
