@@ -6,6 +6,7 @@ import time, socket, os
 from luma.core.render import canvas
 from luma.core.virtual import viewport
 import subprocess as sp
+import RCB_pose_forward as rpf
 
 # Initializing Display
 serial = i2c(port=1, address=0X3c)
@@ -178,15 +179,18 @@ def rcb_trackingcheck():
     while True:
         process_list = sp.check_output("ps -u | grep RCB_pose_forward.py", shell=True, universal_newlines=True)
         pose = list(process_list.split('\n', 1)[0].split())
-        if pose[7] == "Sl+":
+        if pose[7] == "Sl+" or pose[2]>33:
             draw_onscreen(0, 15, "TrackingLab Offline")
-            time.sleep(3)
+            time.sleep(2)
         elif len(pose) == 0:
             draw_onscreen(0, 15, "PoseForward Relaunching")
-            time.sleep(3)
+            time.sleep(2)
         else: 
             draw_onscreen(0, 15, "Receiving Data!")
+            time.sleep(2)
         draw_onscreen(0, 15, "Updating Status...")
+        if rpf.ekf_callback.ekf_status == False:
+            draw_onscreen(0,15, "EKF error!")
 
 
 
