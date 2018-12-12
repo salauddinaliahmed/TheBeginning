@@ -9,11 +9,21 @@
 #include <future>
 #include <assert.h>
 
-public volatile bool flag = True; // To check if the thread is killed or not. 
-std::mutex bool is_done;
-public float sn_x_distance = 1; // Set to 1 meter each as default.
-public float sn_y_distance = 1;
-public float sn_z_distance = 1;
+bool flag = false; // To check if the thread is killed or not. 
+bool is_done = false;
+std::mutex is_done_mutex;
+
+// This close loop is used if you want to close the loop attitude command. 
+Rates close_loop(float, float, float, std::shared_ptr<Telemetry> telemetry);
+
+struct Safety_Net {
+	public float sn_x_distance = 1; // Set to 1 meter each as default.
+	public float sn_y_distance = 1;
+	public float sn_z_distance = 1;
+	public float max_roll_angle = 60;
+	public float max_pitch_angle = 60;
+	public float max_yaw_angle = 60;
+};
 
 struct Rates {
 	float roll;
@@ -21,8 +31,8 @@ struct Rates {
 	float yaw;
 	float thrust;
 };
+
 using namespace dronecode_sdk;
-Rates close_loop(float, float, float, std::shared_ptr<Telemetry> telemetry);
 
 TEST_F(SitlTest, OffboardUserDefined)
 {
@@ -40,7 +50,8 @@ TEST_F(SitlTest, OffboardUserDefined)
 	auto offboard = std::make_shared<Offboard>(system);
 
 	// health_all_ok() will always return false on the actual Quad without GPS. // Can be changed to a position check too. ( Receiving position or not)
-	while (!telemetry->health_all_ok()) {
+	while (!telemetry->health_all_ok()) 
+	{
 		std::cout << "waiting for system to be ready" << std::endl;
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 	}
@@ -48,45 +59,50 @@ TEST_F(SitlTest, OffboardUserDefined)
 	//Start user thread!
 	std::thread user_thread() // Pass list of objects. 
 
+	//Initializing user defined safety net values
+	Safety_Net sn;
+
 	//Safety cage conditions. 
 	while (true)
 	{
-		Telemetry::PositionVelocity NED pos = telemetry->position_velocity_ned()
-			if (pos.position.north_m < 0 || pos.position.east_m < 0 || pos.position.down_m < 0)
-			{
-				if (pos.position.north_m < -(sn_x_distance) || pos.position.east_m < -(sn_y_distance) || abs(pos.position.down) < 0.2 || angles > 60 degrees)
-				{
-					if (flag == false)
-					{
-						exitSignal.set_value();
-						flag = true;
-					}
-					std::this_thread::sleep_for(std::chrono::milliseconds(10));
-					action->set_flight_mode(SystemImpl::FlightMode::HOLD);
-				}
-			}
-			else if (pos.position.north_m > 1 || pos.position.east_m > 1)
+		Telemetry::PositionVelocityNED pos = telemetry->position_velocity_ned();
+		Telemetry::EulerAngle d_angle = telemetry->attitude_euler_angle();
+		if (pos.position.north_m < 0 || pos.position.east_m < 0 || pos.position.down_m < 0)
+		{
+			if (pos.position.north_m < -(sn.max_x_distance) || pos.position.east_m < -(sn.max_y_distance) || abs(pos.position.down) < 0.2f || d_angle.roll_deg < sn.max_roll_angle || d_angle.pitch_deg < sn.max_roll_angle)
 			{
 				if (flag == false)
 				{
 					exitSignal.set_value();
 					flag = true;
-				}
+					std::this_thread::sleep_for(std::chrono::milliseconds(10));
+					action->set_flight_mode(SystemImpl::FlightMode::HOLD);
+					break;
+				}	
+			}
+		}
+		else if (pos.position.north_m > 1 || pos.position.east_m > 1 || abs(pos.position.down) > 1.0f || d_angle.roll_deg > sn.max_roll_angle || d_angle.pitch_deg > sn.max_roll_angle)
+		{
+			if (flag == false)
+			{
+				exitSignal.set_value();
+				flag = true;
 				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 				action->set_flight_mode(SystemImpl::FlightMode::HOLD);
+				break;
 			}
+		}
+		std::lock_guard<std::mutex> lock(is_done_mutex);
 		if (is_done == true)
 		{
 			break;
 		}
-
+	}
 
 	action->land();
 	std::this_thread::sleep_for(std::chrono::seconds(1));
 	action->disarm();
-    							
-	}
-	
+}
 
 // User method. 
 bool user_tests(std::shared_ptr<Telemetry> telemetry, std::shared_ptr<Offboard> offboard, std::shared_ptr<Action> action, std::future<void> futureObj)
@@ -152,6 +168,21 @@ bool user_tests(std::shared_ptr<Telemetry> telemetry, std::shared_ptr<Offboard> 
 			}
 		}
 
+		// Task completed.
 		is_done = true;
 	}
+}
+
+//Creating a closing function:
+Rates close_loop(float roll_rate, float pitch_rate, float yaw_rate, std::shared_ptr<Telemetry> telemetry)
+{
+	double roll_control = 6.0 * (double)(roll_rate - telemetry->attitude_euler_angle().roll_deg);
+	double pitch_control = 7.2 * (double)(pitch_rate - telemetry->attitude_euler_angle().pitch_deg);
+	double yaw_control = 3.80 * (double)(yaw_rate - telemetry->attitude_euler_angle().yaw_deg);
+	double thrust_control = 0.1 * (double)(10.5f - telemetry->position().relative_altitude_m);
+	if (thrust_control < 0.1)
+	{
+		thrust_control = 0.35;
+	}
+	return { (float)roll_control, (float)pitch_control, (float)yaw_control, (float)(thrust_control) };
 }
