@@ -1,5 +1,10 @@
-     echo -------------------------------------------------------------
-        echo Cloning RCBenchmark repositories and changing working directory.
+#!/bin/bash
+	while true;
+	do 
+     	echo -------------------------------------------------------------
+        declare -i err
+	err=0
+	echo Cloning RCBenchmark repositories and changing working directory.
         cd
         cd /home/pi/Transport_Protocol
         sudo git checkout Transport_Protocol-V2
@@ -35,7 +40,6 @@
         if [ $err -gt 0 ];
 	then
 	echo RCB_Transport_Protocol installation failed. 
-	break
 	fi
 	echo Making Files executable
         sudo chmod +x ~/autolaunch_scripts/launch_mavproxy_rcb.sh
@@ -83,5 +87,6 @@
         echo Preparing to reboot 
         echo you have 5 seconds to cancel. to cancel press Ctl+C
         sleep 5
-        echo rebooting... 
-        sleep 1
+	break
+	done
+        

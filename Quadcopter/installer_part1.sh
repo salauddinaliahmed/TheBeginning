@@ -89,13 +89,16 @@ do
     while true; do
     read -p $'Do you wish to continue with the second part of the installation \n Enter Y/y for yes or N/n for No: ' yn
     case $yn in
-        [Yy]* ) bash /home/pi/TheBeginning/Quadcopter/installer_part2.sh; break;;
-        [Nn]* ) exit;;
+        [Yy]* ) bash /home/pi/TheBeginning/Quadcopter/installer_part2.sh; 
+	echo "Part 2/ Part 2 complete. Complete environment Setup on:  $(date)" > /home/pi/Created_on.txt
+	echo Part 2/Part 2 complete. Complete Environment is now set up. Details logged in Created_on.txt
+	break;;
+        [Nn]* ) echo "Part 1/Part 2 installed on: $(date)" > /home/pi/Created_on.txt;	
+	echo "Part 1/Part 2 completed."
+	exit;;
         * ) echo "Please answer yes or no.";;
     esac
     done
-    date > /home/pi/Created_on.txt
-    echo "Environment created. Check Created_on.txt for details."
     echo --------------------------------------------------------------
     break
     else 
