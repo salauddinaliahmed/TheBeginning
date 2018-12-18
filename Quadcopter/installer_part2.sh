@@ -85,4 +85,3 @@
         sleep 5
         echo rebooting... 
         sleep 1
-        sudo reboot

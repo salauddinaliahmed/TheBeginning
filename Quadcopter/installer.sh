@@ -87,16 +87,17 @@ do
 	break
 	fi
     while true; do
-    read -p "Do you wish to install this program?" yn
+    read -p $'Do you wish to continue with the second part of the installation \n Enter Y/y for yes or N/n for No: ' yn
     case $yn in
-        [Yy]* ) sh /home/pi/Transport_Protocol/Quad_Environment/installer_part2.sh; break;;
+        [Yy]* ) bash /home/pi/TheBeginning/Quadcopter/installer_part2.sh; break;;
         [Nn]* ) exit;;
         * ) echo "Please answer yes or no.";;
     esac
     done
     date > /home/pi/Created_on.txt
     echo "Environment created. Check Created_on.txt for details."
-    echo 
+    echo --------------------------------------------------------------
+    break
     else 
         echo Please connect to wifi and run the script.
     fi
