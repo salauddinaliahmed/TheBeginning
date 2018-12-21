@@ -62,8 +62,8 @@ def draw_scroll(text):
             a = 0
             scroller += 1
             if scroller >= 2: 
-                mavproxy = os.path.isfile('/home/pi/Desktop/mavproxy.log')
-                pose = os.path.isfile('/home/pi/Desktop/pose.log')
+                mavproxy = os.path.isfile('/home/pi/autolaunch_scripts/mavproxy.log')
+                pose = os.path.isfile('/home/pi/autolaunch_scripts/pose.log')
                 if mavproxy == True:
                     draw_onscreen(0,15, "Rechecking...")
                     break
@@ -92,25 +92,25 @@ def IP_Addr():
 def rcb_TrackingCheck():
     global vision_error
     while True:
-        pose = os.path.isfile('/home/pi/Desktop/pose.log')
+        pose = os.path.isfile('/home/pi/autolaunch_scripts/pose.log')
         if pose == True:
-            file_size = os.path.getsize("/home/pi/Desktop/pose.log")
+            file_size = os.path.getsize("/home/pi/autolaunch_scripts/pose.log")
             time.sleep(2)
-            file_size_new = os.path.getsize("/home/pi/Desktop/pose.log")
+            file_size_new = os.path.getsize("/home/pi/autolaunch_scripts/pose.log")
             if file_size == file_size_new:            
                 draw_onscreen(0, 15, "TrackingLab Offline")
-                file_size = os.path.getsize("/home/pi/Desktop/pose.log")
+                file_size = os.path.getsize("/home/pi/autolaunch_scripts/pose.log")
                 draw_onscreen(0,15, "Updating Status...")
-                os.remove("/home/pi/Desktop/pose.log")
+                os.remove("/home/pi/autolaunch_scripts/pose.log")
             else:
                 draw_onscreen(0,15, "Receiving Data!")
-                with open("/home/pi/Desktop/pose.log") as reading_file:
+                with open("/home/pi/autolaunch_scripts/pose.log") as reading_file:
                     for line in reading_file:
                         if "Vision" in line:
                             vision_error = True
                             draw_onscreen(0,15, "Receiving Data!")
                             break
-                    os.remove("/home/pi/Desktop/pose.log")
+                    os.remove("/home/pi/autolaunch_scripts/pose.log")
                     vision_error = False
                     time.sleep(1)
                 draw_onscreen(0,15, "Updating Status...")
@@ -121,17 +121,17 @@ def rcb_TrackingCheck():
 # Checking if the necessary files are launched.
 
 def launch_Check():
-    mavproxy = os.path.isfile('/home/pi/Desktop/mavproxy.log')
-    pose = os.path.isfile('/home/pi/Desktop/pose.log')
+    mavproxy = os.path.isfile('/home/pi/autolaunch_scripts/mavproxy.log')
+    pose = os.path.isfile('/home/pi/autolaunch_scripts/pose.log')
     if mavproxy == True:
         draw_onscreen(0,15, "MavProxy Launched")
         if pose == True:
             draw_onscreen(0,15, "PoseForward Launched")
             found = False
-            with open("/home/pi/Desktop/pose.log") as reading_file:
+            with open("/home/pi/autolaunch_scripts/pose.log") as reading_file:
                 for line in reading_file:
                     if '>>> No heartbeat in 30 seconds, aborting.' in line:
-                        os.remove("/home/pi/Desktop/pose.log")
+                        os.remove("/home/pi/autolaunch_scripts/pose.log")
                         draw_scroll("Not Linked to Mavproxy")
                         found = True
                         break
@@ -140,12 +140,12 @@ def launch_Check():
                         found = True
                         time.sleep(4)
                         draw_onscreen(0,15, "Checking for Q.G.C")                        
-                        os.remove("/home/pi/Desktop/pose.log")
+                        os.remove("/home/pi/autolaunch_scripts/pose.log")
                         launch_Check()
                         break
                     elif 'Keyboard' in line:
                         draw_onscreen(0,15, "User aborted")
-                        os.remove("/home/pi/Desktop/pose.log")
+                        os.remove("/home/pi/autolaunch_scripts/pose.log")
                         launch_Check()
                     elif 'Data received' in line:
                         break   
@@ -161,7 +161,7 @@ def launch_Check():
 
 
 def controller_id():
-    with open("/home/pi/Desktop/launch_mavproxy_rcb.sh") as data:
+    with open("/home/pi/autolaunch_scripts/launch_mavproxy_rcb.sh") as data:
         line = data.read()
         words = line.split()
         if "--controller-id" in words[-1]:
