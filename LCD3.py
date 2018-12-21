@@ -24,20 +24,20 @@ def rcb_logo():
 # Drawing on screen
 def draw_onscreen(x, y, text):
     global vision_error  
-    a = IP_Addr()
-    if text == a:
+    ip_addr = IP_Addr()
+    if text == ip_addr:
         with canvas(device) as draw:
             draw.text((0,0), "IP:"+ IP, fill="white")
             draw.text((0,30), id, fill="white")
-    elif a == "127.0.0.1":
+    elif ip_addr == "127.0.0.1":
         with canvas(device) as draw:
             draw.text((0,0), "Internet offline", fill="white")
     else:
-        a = IP_Addr()
+        ip_addr = IP_Addr()
         with canvas(device) as draw:
             #if "192.168.1" in a:
              #   a = "Incorrect Router"
-            draw.text((0,0),"IP:"+ a, fill="white")
+            draw.text((0,0),"IP:"+ ip_addr, fill="white")
             draw.text((x, y), text, fill="white")
             draw.text((0,30), id, fill="white")
             if vision_error == True:
@@ -51,15 +51,15 @@ def draw_scroll(text):
     IP = IP_Addr()
     text_size = len(text) + 42
     virtual = viewport(device, width= device.width, height= device.height)
-    a = 1
+    letter_scroll = 1
     scroller = 0
-    while a in range(text_size):
+    while letter_scroll in range(text_size):
         with canvas(virtual) as draw:
             draw.text((0,0),"IP:"+IP, fill="white")
             draw.text((10 - a*3, 15), text, fill="white")       
-        a += 1
-        if a == text_size:
-            a = 0
+        letter_scroll += 1
+        if  == text_size:
+            letter_scroll = 0
             scroller += 1
             if scroller >= 2: 
                 pose = os.path.isfile('/home/pi/autolaunch_scripts/pose.log')
@@ -136,7 +136,7 @@ def launch_Check():
                     elif 'socket.error: [Error 101] Network is unreachable' in line:
                         draw_onscreen(0, 15, "Not Connected to Q.G.C.")
                         found = True
-                        time.sleep(4)
+                        time.sleep(1)
                         draw_onscreen(0,15, "Checking for Q.G.C")                        
                         os.remove("/home/pi/autolaunch_scripts/pose.log")
                         launch_Check()
@@ -163,8 +163,8 @@ def controller_id():
         line = data.read()
         words = line.split()
         if "--controller-id" in words[-1]:
-            a = words[-1].split("=")
-            cont_id ="Tracker ID: " +a[1]
+            temp = words[-1].split("=")
+            cont_id ="Tracker ID: " +temp[1]
             return cont_id
         else:
             return " " 
