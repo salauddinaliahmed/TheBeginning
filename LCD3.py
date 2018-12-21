@@ -18,7 +18,7 @@ def rcb_logo():
     image = Image.open(filename).resize((128,64), Image.ANTIALIAS).convert('1')
     image.show()
     device.display(image)
-    time.sleep(5)
+    time.sleep(3)
     return
 
 # Drawing on screen
@@ -44,7 +44,7 @@ def draw_onscreen(x, y, text):
                 draw.text((0,45), "Vision & IMU mismatch", fill="white")
             #Used for displaying user message. P.S. Limited to 21 characters for now. 
             #draw.text((0,45), "Enter your text here", fill = "white")
-    time.sleep(2)
+    time.sleep(1)
 
 # Scrolling on the screen
 def draw_scroll(text):
@@ -62,11 +62,9 @@ def draw_scroll(text):
             a = 0
             scroller += 1
             if scroller >= 2: 
-                mavproxy = os.path.isfile('/home/pi/autolaunch_scripts/mavproxy.log')
                 pose = os.path.isfile('/home/pi/autolaunch_scripts/pose.log')
-                if mavproxy == True:
-                    draw_onscreen(0,15, "Rechecking...")
-                    break
+                draw_onscreen(0,15, "Rechecking...")
+                break
     launch_Check()
     
 # Displaying Device IP Address
