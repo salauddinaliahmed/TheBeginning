@@ -58,7 +58,7 @@ def draw_scroll(text):
             draw.text((0,0),"IP:"+IP, fill="white")
             draw.text((10 - a*3, 15), text, fill="white")       
         letter_scroll += 1
-        if  == text_size:
+        if  letter_scroll == text_size:
             letter_scroll = 0
             scroller += 1
             if scroller >= 2: 
