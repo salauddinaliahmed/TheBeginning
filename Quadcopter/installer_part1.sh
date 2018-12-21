@@ -37,26 +37,40 @@ do
     echo ------------------------------------------------------------- 
 	sudo apt-get -y install libxml2-dev libxslt-dev 
         err=err+$?
-	sudo apt-get -y install libjpeg8-dev
+    sudo apt-get -y install libjpeg8-dev
         err=err+$?
-	pip install MAVProxy
-        err=err+$?
+	# pip install MAVProxy
+    #     err=err+$?
 	pip install Pillow
         err=err+$?
 	pip install luma.oled 
-        err=err+$?
+         err=err+$?
 	pip install luma.core
         err=err+$?
-	sudo apt-get -y install python-dev python-opencv python-wxgtk3.0 python-matplotlib python-pygame python-lxml python-yaml
+    sudo apt-get -y install python-dev python-opencv python-wxgtk3.0 python-matplotlib python-pygame python-lxml python-yaml
         err=err+$?
 	sudo apt-get -y install screen 
-        echo $?
-	err=err+$?
+     err=err+$?
 	echo Python dependencies downloaded 
-        echo $err
+    echo Installing MavLink Router.
+    cd 
+    git clone https://github.com/intel/mavlink-router.git
+    cd mavlink-router
+    err=err+$?
+    git submodule update --init --recursive
+    err=err+$?
+    sudo apt-get install autoconf automake pkg-config libgtk-3-dev
+    err=err+$?
+    ./autogen.sh && ./configure CFLAGS='-g -O2' \
+        --sysconfdir=/etc --localstatedir=/var --libdir=/usr/lib64 \
+    --prefix=/usr
+    err=err+$?
+    make
+    err=err+$?
+    make install
 	if [ $err -gt 0 ];
 	then
-	echo Error with Dronekit or SSH installation.
+	echo Error with MavRouter installation or SSH installation.
 	break
 	fi
     echo -------------------------------------------------------------
@@ -89,7 +103,7 @@ do
     while true; do
     read -p $'Do you wish to continue with the second part of the installation \n Enter Y/y for yes or N/n for No: ' yn
     case $yn in
-        [Yy]* ) bash /home/pi/TheBeginning/Quadcopter/installer_part2.sh; 
+        [Yy]* ) bash /home/pi/Transport_Protocol/Quad_Environment/installer_part2.sh; 
 	echo "Part 2/ Part 2 complete. Complete environment Setup on:  $(date)" > /home/pi/Created_on.txt
 	echo Part 2/Part 2 complete. Complete Environment is now set up. Details logged in Created_on.txt
 	break;;
