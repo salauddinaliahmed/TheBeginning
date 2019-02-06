@@ -1,4 +1,4 @@
-
+#!/bin/bash
 cd
         sudo chmod +x ~/autolaunch_scripts/launch_mavproxy_rcb.sh
         err=err+$?
